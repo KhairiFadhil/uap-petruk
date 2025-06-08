@@ -3,10 +3,7 @@
 #include <numeric>
 
 void StockDataProcessor::preprocessData(std::vector<StockPoint>& data) {
-    // Set dayIndex buat setiap data point
-    // for (size_t i = 0; i < data.size(); ++i) {
-    //     data[i].dayIndex = static_cast<int>(i);
-    // }
+  
 }
 
 

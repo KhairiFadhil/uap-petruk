@@ -36,6 +36,9 @@ private:
     // Render header sama judul
     void renderHeader();
     
+    // Render header utama (untuk semua screen)
+    void renderTopHeader();
+    
     // Render grafik utama (sumbu, data, regresi)
     void renderGraph(const std::vector<StockPoint>& data, 
                      const LinearRegression& regression,
@@ -56,6 +59,13 @@ private:
     // Gambar garis regresi
     void drawRegressionLine(const LinearRegression& regression);
     
+    // Untuk Loading State (Gimik)
+    void LoadingState();
+    
+    // Navigasi tabel data CSV
+    
+    // Tampilkan detail row yang dipilih
+    void showRowDetails(const StockPoint& point);
     // Plot prediksi masa depan
     void plotPredictions(const std::vector<double>& predictions);
     
@@ -71,8 +81,11 @@ public:
     
     ~UIManager() { cleanup(); }
     
+    std::string selectFile();
     // Inisialisasi NCurses
     void init();
+    // Tampilkan tabel data CSV
+    void displayDataTable(const std::vector<StockPoint>& data);
     
     // Bersihin NCurses
     void cleanup();
