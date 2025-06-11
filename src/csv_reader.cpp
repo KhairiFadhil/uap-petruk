@@ -19,6 +19,10 @@ bool CSVReader::loadData(const std::string& filename, std::vector<StockPoint>& d
     std::string line;
     while (std::getline(file, line)) {
         StockPoint point = parseLine(line);
+
+        // skip jika data tidak valid (data kosong)
+        if (point.date.empty()) continue;
+        
         data.push_back(point);
     }
     return true;
@@ -52,8 +56,14 @@ StockPoint CSVReader::parseLine(const std::string& line) {
         if (std::getline(ss, token, ',')) {
             point.volume = parseLong(trim(token));
         }
+
+        // validasi minimum 
+        if (point.date.empty() || point.open == 0.0 || point.close == 0.0 ){
+            return StickPoint(); //data tidak valid
+        }
     } catch (const std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;
+        return StickPoint(); 
     }
     return point;
 }
@@ -130,6 +140,21 @@ bool CSVReader::validateFile(const std::string& filename, std::string& errorMess
         file.close();
         return false;
     }
+
+    // Cek minimal 2 baris (header + 1 data)
+    int dataLines = 0;
+    std::string line;
+    while (std::getline(file, line)){
+        if (!line.empty() && line.find(',') != std::string::npos){
+            dataLines++;
+            if (dataLines >= 1) break;
+        }
+    }
+
+    if (dataLines < 1) {
+        errorMassage = "File tidak mengandung cukup data " ;
+        return false;
+    }
     
     file.close();
     errorMessage = "";
@@ -150,7 +175,14 @@ int CSVReader::getLineCount(const std::string& filename) {
 // buat liat preview beberapa baris pertama (nnti aj)
 std::vector<std::string> CSVReader::previewFile(const std::string& filename, int lines) {
     std::vector<std::string> preview;
-    
+    std::ifstream file(filename);
+    std:: string line;
+    int count = 0;
+
+    while (std::getline(file, line) && count < lines) {
+        preview.push_back(line);
+        count++;
+    }
     
     return preview;
 } 
