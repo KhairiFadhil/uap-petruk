@@ -11,7 +11,8 @@ struct StockPoint {
     double low;           
     double close;        
     long volume;         
-    
+    int dayIndex = 0;  
+
     StockPoint() : open(0), high(0), low(0), close(0), volume(0) {}
     
     StockPoint(const std::string& d, double o, double h, double l, double c, long v) 
