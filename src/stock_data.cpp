@@ -30,8 +30,8 @@ StockDataProcessor::DataSummary StockDataProcessor::getSummary(const std::vector
     double sumClose = 0.0;
     long sumVolume = 0;
 
-    summary.minClose = data[0].close;
-    summary.maxClose = data[0].close;
+    summary.minPrice = data[0].close;
+    summary.maxPrice = data[0].close;
     summary.minVolume = data[0].volume;
     summary.maxVolume = data[0].volume;
 
@@ -39,17 +39,17 @@ StockDataProcessor::DataSummary StockDataProcessor::getSummary(const std::vector
       sumClose += point.close;
       sumVolume += point.volume;
 
-      if (point.close < summary.minClose) summary.minClose = point.close;
-      if (point.close > summary.maxClose) summary.maxClose = point.close;
+      if (point.close < summary.minPrice) summary.minPrice = point.close;
+      if (point.close > summary.maxPrice) summary.maxPrice = point.close;
 
       if (point.volume < summary.minVolume) summary.minVolume = point.volume;
       if (point.volume > summary.maxVolume) summary.maxVolume = point.volume;
 
     }
 
-  summary.avgClose = sumClose / data.size();
+  summary.avgPrice = sumClose / data.size();
   summary.avgVolume = static_cast<double>(sumVolume) / data.size();
-  summary.totalDays = data.size();
+  summary.totalDays = static_cast<int>(data.size());
     // Hitung min, max, rata-rata harga
       
     // Hitung min, max, rata-rata volume
