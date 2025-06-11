@@ -8,36 +8,60 @@ bool LinearRegression::trainModel(const std::vector<StockPoint>& data) {
         return false;
     }
     
-    // Extract x sama y values
-    // xValues = index hari, yValues = harga penutupan
-    
-    // Hitung koefisien
-    
-    // Hitung R-squared
-    
-    // Bikin string persamaan
+    for(size_t i = 0; i < data.size(); ++i){
+        xValues.push_back(static_cast<double>(i));
+        yValues.push_back(data[i].close);
+    }
+
+    calculateCoefficients();
+    calculateRSquared();
+    generateEquation();
     
     isTrained = true;
     return true;
 }
 
 double LinearRegression::calculateMean(const std::vector<double>& values) {
-    return 0.0;
+    if(values.empty()) return 0.0;
+    double sum = std::accumulate(values.begin(), values.end(), 0.0);
+    return sum / values.size();
 }
 
 void LinearRegression::calculateCoefficients() {
-    // Implement metode least squares
-    // slope = Σ((x - x̄)(y - ȳ)) / Σ((x - x̄)²)
-    // intercept = ȳ - slope * x̄
+    double xMean = calculateMean(xValues);
+    double yMean = calculateMean(yValues);
+
+    double numerator = 0.0;
+    double denominator = 0.0;
+
+    for(size_t i = 0; i < xValues.size(); ++i){
+        numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
+        denominator += (xValues[i] - xMean) * (xValues[i] - xMean);
+    }
+
+    model.slope = numerator / denominator;
+    model.intercept = yMean - model.slope * xMean;
 }
 
 void LinearRegression::calculateRSquared() {
-    // Hitung koefisien determinasi
-    // R² = 1 - (SS_res / SS_tot)
+    double ssTotal = 0.0;
+    double ssRes = 0.0;
+    double yMean = calculateMean(yValues);
+
+    for(size_t i = 0; i < yValues.size(); ++i){
+        ssTotal += (yValues[i] - yMean) * (yValues[i] - yMean);
+        double predicted = model.slope * xValues[i] + model.intercept;
+        ssRes += (yValues[i] - predicted) * (yValues[i] - predicted);
+    }
+
+    model.rSquared = 1 - (ssRes / ssTotal);
 }
 
 void LinearRegression::generateEquation() {
-    // Format persamaan jadi string: "y = mx + b"
+    std::ostringstream ss;
+    ss << std::fixed << std::setprecision(2);
+    ss << "y = " << model.slope << "x + " << model.intercept;
+    model.equation = ss.str();
 }
 
 double LinearRegression::predict(int dayIndex) {
@@ -45,17 +69,15 @@ double LinearRegression::predict(int dayIndex) {
         return 0.0;
     }
     
-    // Return slope * dayIndex + intercept
-    return 0.0;
+    return model.slope * dayIndex + model.intercept;
 }
 
 std::vector<double> LinearRegression::generatePredictions(int totalDays) {
     std::vector<double> predictions;
     
-    // Bikin prediksi buat tiap hari
-    // for (int i = 0; i < totalDays; ++i) {
-    //     predictions.push_back(predict(i));
-    // }
+    for(int i = 0; i < totalDays; ++i){
+        predictions.push_back(predict(i));
+    }
     
     return predictions;
 }
@@ -65,17 +87,17 @@ std::string LinearRegression::getTrend() const {
         return "Unknown";
     }
     
-    // Analisis slope buat tentuin trend
-    // if (model.slope > 0.1) return "Naik";
-    // else if (model.slope < -0.1) return "Turun";
-    // else return "Datar";
-    
-    return "Unknown";
+   if(model.slope > 0.1){
+        return "Naik";
+    }else if(model.slope < -0.1){
+        return "Turun";
+    }else{
+        return "Datar";
+    }
 }
 
 bool LinearRegression::isModelValid() const {
-    // Cek R-squared masuk akal, ukuran data cukup, dll
-    return isTrained;
+    return isTrained && model.rSquared >= 0 && model.rSquared <= 1;
 }
 
 void LinearRegression::clear() {
