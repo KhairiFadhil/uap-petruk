@@ -70,30 +70,38 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
+        if (stockData.empty()) {
+            ui.showError("File CSV tidak terisi data yang valid.");
+            ui.cleanup();
+            return 1;
+        }
+        
         ui.displayDataTable(stockData);
         // // Langkah 3: Olah data (ubah tanggal jadi angka, normalisasi)
         StockDataProcessor processor;
         processor.preprocessData(stockData);
         
         // // Langkah 4: Latih model regresi linear (hitung slope & intercept)
-        // LinearRegression regression;
-        // regression.trainModel(stockData);
-        
+        LinearRegression regression;
+        regression.trainModel(stockData);
+
+        // Debug print
+        std::cout << "Slope: " << regression.getSlope() << ", Intercept: " << regression.getIntercept() << std::endl;
         // // Langkah 5: Bikin prediksi (masa lalu & masa depan)
-        // std::vector<double> predictions = regression.generatePredictions(stockData.size() + 10);
+        std::vector<double> predictions = regression.generatePredictions(stockData.size() + 10);
         
         // // Langkah 6: Siapkan visualisasi (hitung skala grafik, setup grid)
-        // ui.prepareVisualization(stockData, predictions);
+        ui.prepareVisualization(stockData, predictions);
         
         // // Langkah 7: LOOP UTAMA - Tampilkan UI NCurses
-        // bool running = true;
-        // while (running) {
+        bool running = true;
+        while (running) {
         //     // Render semua komponen UI
-        //     ui.renderAll(stockData, regression, predictions);
+            ui.renderAll(stockData, regression, predictions);
             
         //     // Tunggu input user terus proses
-        //     int input = ui.waitForInput();
-        //     running = ui.processInput(input);
+            int input = ui.waitForInput();
+            running = ui.processInput(input);
         // }
         
         ui.cleanup();
