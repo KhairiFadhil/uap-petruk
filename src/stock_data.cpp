@@ -4,7 +4,6 @@
 #include <cmath>
 
 void StockDataProcessor::preprocessData(std::vector<StockPoint>& data) {
-    // Konversi tanggal ke nilai numerk (hari ke-n)
   for (size_t i = 0; i < data.size(); i++){
     data[i].dayIndex = static_cast<int>(i);
   }
@@ -12,11 +11,10 @@ void StockDataProcessor::preprocessData(std::vector<StockPoint>& data) {
 
 
 void StockDataProcessor::normalizeData(std::vector<StockPoint>& data) {
-    // Implement normalisasi kalo butuh
+    
 }
 
 bool StockDataProcessor::validateData(const std::vector<StockPoint>& data) {
-    // Cek data kosong atau invalid
     return !data.empty();
 }
 
@@ -49,11 +47,6 @@ StockDataProcessor::DataSummary StockDataProcessor::getSummary(const std::vector
 
   summary.avgPrice = sumClose / data.size();
   summary.avgVolume = static_cast<double>(sumVolume) / data.size();
-  summary.totalDays = static_cast<int>(data.size());
-    // Hitung min, max, rata-rata harga
-      
-    // Hitung min, max, rata-rata volume
-    // Set total hari
-    
+  summary.totalDays = static_cast<int>(data.size());    
     return summary;
 } 

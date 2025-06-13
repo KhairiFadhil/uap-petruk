@@ -76,36 +76,28 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         
-        ui.displayDataTable(stockData);
-        // // Langkah 3: Olah data (ubah tanggal jadi angka, normalisasi)
+        // Langkah 3: Olah data (ubah tanggal jadi angka, normalisasi)
         StockDataProcessor processor;
         processor.preprocessData(stockData);
         
         // // Langkah 4: Latih model regresi linear (hitung slope & intercept)
         LinearRegression regression;
         regression.trainModel(stockData);
-
-        // Debug print
-        std::cout << "Slope: " << regression.getSlope() << ", Intercept: " << regression.getIntercept() << std::endl;
-        // // Langkah 5: Bikin prediksi (masa lalu & masa depan)
         std::vector<double> predictions = regression.generatePredictions(stockData.size() + 10);
         
-        // // Langkah 6: Siapkan visualisasi (hitung skala grafik, setup grid)
-        ui.prepareVisualization(stockData, predictions);
+        // Tampilkan tabel data dan tunggu sampai user menekan spasi
+        ui.displayDataTable(stockData);
         
-        // // Langkah 7: LOOP UTAMA - Tampilkan UI NCurses
+        // Setelah user menekan spasi, tampilkan hasil prediksi
         bool running = true;
         while (running) {
-        //     // Render semua komponen UI
             ui.renderAll(stockData, regression, predictions);
-            
-        //     // Tunggu input user terus proses
             int input = ui.waitForInput();
-            running = ui.processInput(input);
-        // }
-        
+            if (input == 'q' || input == 'Q' || input == 27) { // ESC
+                running = false;
+            }
+        }
         ui.cleanup();
-        
     } catch (const std::exception& e) {
         ui.showError("Ada error nih: " + std::string(e.what()));
         printw("\nTekan sembarang tombol untuk keluar...");

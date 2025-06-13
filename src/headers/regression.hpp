@@ -21,41 +21,26 @@ private:
     std::vector<double> yValues;  // Harga penutupan
     bool isTrained;
     
-    // Hitung rata-rata dari vector
     double calculateMean(const std::vector<double>& values);
     
-    // Hitung slope sama intercept
     void calculateCoefficients();
-    
-    // Hitung R-squared (seberapa akurat)
     void calculateRSquared();
     
-    // Bikin string persamaan
     void generateEquation();
     
 public:
     LinearRegression() : isTrained(false) {}
-    
-    // Latih model pake data
+    double getSlope() const;
+    double getIntercept() const;
+    std::string getEquation() const;
+    double getRSquared() const;
     bool trainModel(const std::vector<StockPoint>& data);
-    
-    // Ambil hasil model
     const RegressionModel& getModel() const { return model; }
-    
-    // Prediksi harga buat hari tertentu
-    double predict(int dayIndex);
-    
-    // Bikin prediksi buat beberapa hari
+    double predict(int dayIndex) const;
     std::vector<double> generatePredictions(int totalDays);
-    
-    // Analisis trend (naik/turun/datar)
     std::string getTrend() const;
-    
-    // Cek apakah model bagus atau ngga
     bool isModelValid() const;
-    
-    // Bersihin model
     void clear();
 };
 
-#endif // REGRESSION_HPP 
+#endif

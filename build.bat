@@ -35,11 +35,23 @@ echo ====================================
 echo  BUILD 1: DEBUG VERSION
 echo ====================================
 echo.
+echo Compiling resources...
+windres src/resource.rc -o obj/resource.o
+if %ERRORLEVEL% NEQ 0 (
+    echo Warning: Resource compilation failed, continuing without icon
+    set RESOURCE_OBJ=
+) else (
+    echo ✅ Resources compiled successfully
+    set RESOURCE_OBJ=obj/resource.o
+)
+
+echo.
 echo Compiling Stock Forecast (Debug)...
 
 g++ -Wall -Wextra -std=c++17 -g -O0 -DDEBUG ^
     -Isrc/headers -IC:/msys64/mingw64/include/ncursesw ^
     src/main.cpp src/csv_reader.cpp src/ui_manager.cpp src/regression.cpp src/stock_data.cpp ^
+    %RESOURCE_OBJ% ^
     -o bin/debug/stock_forecast_debug.exe -lncursesw
 
 if %ERRORLEVEL% EQU 0 (
@@ -61,6 +73,7 @@ echo Compiling Stock Forecast (Release)...
 g++ -Wall -Wextra -std=c++17 -O3 -DNDEBUG -s ^
     -Isrc/headers -IC:/msys64/mingw64/include/ncursesw ^
     src/main.cpp src/csv_reader.cpp src/ui_manager.cpp src/regression.cpp src/stock_data.cpp ^
+    %RESOURCE_OBJ% ^
     -o bin/release/stock_forecast.exe -lncursesw
 
 if %ERRORLEVEL% EQU 0 (

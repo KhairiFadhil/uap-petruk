@@ -1,6 +1,7 @@
 #include "regression.hpp"
 #include <cmath>
 #include <sstream>
+#include <numeric>
 #include <iomanip>
 
 bool LinearRegression::trainModel(const std::vector<StockPoint>& data) {
@@ -64,7 +65,15 @@ void LinearRegression::generateEquation() {
     model.equation = ss.str();
 }
 
-double LinearRegression::predict(int dayIndex) {
+std::string LinearRegression::getEquation() const {
+    return model.equation;
+}
+
+double LinearRegression::getRSquared() const {
+    return model.rSquared;
+}
+
+double LinearRegression::predict(int dayIndex) const {
     if (!isTrained) {
         return 0.0;
     }
@@ -95,6 +104,16 @@ std::string LinearRegression::getTrend() const {
         return "Datar";
     }
 }
+
+
+double LinearRegression::getSlope() const {
+  return model.slope;
+}
+
+double LinearRegression::getIntercept() const {
+  return model.intercept;
+}
+
 
 bool LinearRegression::isModelValid() const {
     return isTrained && model.rSquared >= 0 && model.rSquared <= 1;
