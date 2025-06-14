@@ -50,7 +50,7 @@ echo Compiling Stock Forecast (Debug)...
 
 g++ -Wall -Wextra -std=c++17 -g -O0 -DDEBUG ^
     -Isrc/headers -IC:/msys64/mingw64/include/ncursesw ^
-    src/main.cpp src/csv_reader.cpp src/ui_manager.cpp src/regression.cpp src/stock_data.cpp ^
+    src/main.cpp src/csv_reader.cpp src/ui_manager.cpp src/regression.cpp src/stock_data.cpp src/mergeSort.cpp ^
     %RESOURCE_OBJ% ^
     -o bin/debug/stock_forecast_debug.exe -lncursesw
 

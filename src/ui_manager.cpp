@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <vector>
+#include <mergeSort.hpp>
 #include <windows.h>
 #include <numeric>
 
@@ -157,7 +158,7 @@ std::string UIManager::selectFile() {
                 }
                 break;
 
-            case 27: // ESC
+            case 27: 
             case 'q':
             case 'Q':
                 return ""; // Batal
@@ -205,16 +206,18 @@ void UIManager::LoadingState() {
     erase(); 
 }
 
-void UIManager::displayDataTable(const std::vector<StockPoint>& data) {
+void UIManager::displayDataTable(const std::vector<StockPoint>& dataArr) {
     LoadingState();
-    if (data.empty()) {
+    if (dataArr.empty()) {
         showError("Tidak ada data untuk ditampilkan");
         return;
     }
     int currentRow = 0;
     int scrollOffset = 0;
     bool exitTable = false;
-    
+    bool isSorted = false;
+    std::vector<StockPoint> data = dataArr;
+    // dataArr data constant dia yang nanti di pake di renderResult, "data" cuman copyannya aja biar bisa di maenin ama merge
     while (!exitTable) {  
         erase(); 
         renderTopHeader();
@@ -266,7 +269,8 @@ void UIManager::displayDataTable(const std::vector<StockPoint>& data) {
         attron(COLOR_PAIR(4));
         mvprintw(maxY-3, 1, "Row: %d/%zu | Scroll: %d", 
                  currentRow + 1, data.size(), scrollOffset + 1);
-        mvprintw(maxY-2, 1, "W/S: Navigate | Page Up/Down: Fast scroll | Enter: View details | Spasi: Lanjut ke Prediksi | Esc/Q: Back");
+                 //Siapapun bikin dong ini sort untuk variabel yang lain (Harga Open, High, Low, Volume) kalau mau tambahin dah sortnya dari kecil ke besar juga mo makan 
+        mvprintw(maxY-2, 1, "W/S: Navigate | Page Up/Down: Fast scroll | Enter: View details | Spasi: Lanjut ke Prediksi | Esc/Q: Back | P: Sort (Harga Close)");
         attroff(COLOR_PAIR(4));
         
         refresh();
@@ -301,7 +305,14 @@ void UIManager::displayDataTable(const std::vector<StockPoint>& data) {
             case KEY_END:
                 currentRow = data.size() - 1;
                 break;
-                
+            case 'p' : 
+                if(isSorted){
+                    mergeSort(data, 0, data.size() - 1);
+                }else{
+                    data = dataArr;
+                }
+                isSorted = !isSorted;
+                break;
             case '\n':
             case '\r':
             case KEY_ENTER:
@@ -312,7 +323,7 @@ void UIManager::displayDataTable(const std::vector<StockPoint>& data) {
                 exitTable = true;
                 break;
                 
-            case 27: // ESC
+            case 27: 
             case 'q':
             case 'Q':
                 exitTable = true;

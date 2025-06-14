@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
     UIManager ui;
     //bin/stock_forecast.exe data/{file_csv} gini wak runnya di cmd
     try {
+        //Mana main menunya bjir
         ui.init();
         
         // if (argc != 2) {
@@ -76,24 +77,19 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         
-        // Langkah 3: Olah data (ubah tanggal jadi angka, normalisasi)
+        // Langkah 3: Olah data (ubah tanggal jadi angka, normalisasi) (gausah)
         StockDataProcessor processor;
         processor.preprocessData(stockData);
-        
-        // // Langkah 4: Latih model regresi linear (hitung slope & intercept)
         LinearRegression regression;
         regression.trainModel(stockData);
         std::vector<double> predictions = regression.generatePredictions(stockData.size() + 10);
-        
-        // Tampilkan tabel data dan tunggu sampai user menekan spasi
         ui.displayDataTable(stockData);
-        
-        // Setelah user menekan spasi, tampilkan hasil prediksi
+
         bool running = true;
         while (running) {
             ui.renderAll(stockData, regression, predictions);
             int input = ui.waitForInput();
-            if (input == 'q' || input == 'Q' || input == 27) { // ESC
+            if (input == 'q' || input == 'Q' || input == 27) { 
                 running = false;
             }
         }
