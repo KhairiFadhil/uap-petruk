@@ -25,16 +25,10 @@ git clone https://github.com/yourusername/stock-forecast.git
 cd stock-forecast
 ```
 
-2. Install MSYS2 dengan menjalankan:
-```bash
-./install_msys2.bat
-```
-
-3. Kompilasi program:
+2. Kompilasi program:
 ```bash
 
 # Atau menggunakan build script
-./build.sh  # Linux/Mac
 ./build.bat # Windows
 ```
 
