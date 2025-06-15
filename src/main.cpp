@@ -7,26 +7,19 @@
 
 int main(int argc, char* argv[]) {
     UIManager ui;
+    std::string csvFile;
     //bin/stock_forecast.exe data/{file_csv} gini wak runnya di cmd
     try {
         //Mana main menunya bjir
         ui.init();
-        
-        // if (argc != 2) {
-        //     ui.showError("Cara pakai: " + std::string(argv[0]) + " <file_csv>");
-        //     printw("\nTekan sembarang tombol untuk keluar...");
-        //     refresh();
-        //     getch();
-        //     ui.cleanup();
-        //     return 1;
-        // }
-        
-        // std::string csvFile = argv[1];
-        //Ui Select File
-        std::string csvFile = ui.selectFile();
-        refresh();
-        // Skip jika file dibatalkan
-        if (csvFile.empty()) {
+        int choice = ui.showMainMenu();
+        if (choice == '1') {
+            csvFile = ui.selectFile();
+            if (csvFile.empty()) {
+                ui.cleanup();
+                return 0;
+            }
+        } else if (choice == '2') {
             ui.cleanup();
             return 0;
         }
@@ -41,7 +34,17 @@ int main(int argc, char* argv[]) {
             ui.cleanup();
             return 1;
         }
+         
+        // if (argc != 2) {
+        //     ui.showError("Cara pakai: " + std::string(argv[0]) + " <file_csv>");
+        //     printw("\nTekan sembarang tombol untuk keluar...");
+        //     refresh();
+        //     getch();
+        //     ui.cleanup();
+        //     return 1;
+        // }
         
+        // std::string csvFile = argv[1];
         // // Load abis kelar validasi
         std::vector<StockPoint> stockData;
         // if (!reader.loadData(csvFile, stockData)) {

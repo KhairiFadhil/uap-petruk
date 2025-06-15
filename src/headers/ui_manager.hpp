@@ -45,8 +45,9 @@ public:
                      const LinearRegression& regression,
                      const std::vector<double>& predictions);
     int waitForInput();
-    bool processInput(int input);
+    bool processInput(int input);   
     void showError(const std::string& message);
+    int showMainMenu();
     static const int KEY_QUIT = 'q';
 };
 
