@@ -1,12 +1,14 @@
 #include "ui_manager.hpp"
-#include <iostream>
-#include <iomanip>
-#include <filesystem>
+
 #include <algorithm>
-#include <vector>
-#include <mergeSort.hpp>
-#include <windows.h>
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
 #include <numeric>
+#include <vector>
+#include <windows.h>
+
+#include "mergeSort.hpp"
 
 void UIManager::init() {
     initscr();
@@ -111,7 +113,7 @@ std::string UIManager::selectFile() {
             }
         } 
         refresh();
-        if (headerWin) wrefresh(headerWin); 
+        if (m_headerWin) wrefresh(m_headerWin); 
         int ch = getch();
         switch (ch) {
             case KEY_UP:
@@ -182,7 +184,7 @@ void UIManager::LoadingState() {
     
     mvprintw(centerY - 1, centerX - 8, "Memuat Data CSV...");
     refresh();
-    if (headerWin) wrefresh(headerWin); 
+    if (m_headerWin) wrefresh(m_headerWin); 
     
     for (int i = 0; i < 10; i++) {
         mvprintw(centerY, centerX - 1, "   ");
@@ -254,12 +256,12 @@ void UIManager::displayDataTable(const std::vector<StockPoint>& dataArr) {
             
             const StockPoint& point = data[dataIndex];
             mvprintw(y, 1, "%-12s %8.2f %8.2f %8.2f %8.2f %12ld", 
-                     point.date.c_str(), 
-                     point.open, 
-                     point.high, 
-                     point.low, 
-                     point.close, 
-                     point.volume);
+                     point.m_date.c_str(), 
+                     point.m_open, 
+                     point.m_high, 
+                     point.m_low, 
+                     point.m_close, 
+                     point.m_volume);
             
             if (dataIndex == currentRow) {
                 attroff(COLOR_PAIR(2) | A_REVERSE);
@@ -351,16 +353,16 @@ void UIManager::showRowDetails(const StockPoint& point) {
     mvprintw(centerY-1, centerX, "         DETAIL DATA SAHAM         ");
     attroff(COLOR_PAIR(1));
     
-    mvprintw(centerY+1, centerX, "Tanggal      : %s", point.date.c_str());
-    mvprintw(centerY+2, centerX, "Harga Buka   : %.2f", point.open);
-    mvprintw(centerY+3, centerX, "Harga Tinggi : %.2f", point.high);
-    mvprintw(centerY+4, centerX, "Harga Rendah : %.2f", point.low);
-    mvprintw(centerY+5, centerX, "Harga Tutup  : %.2f", point.close);
-    mvprintw(centerY+6, centerX, "Volume       : %ld", point.volume);
+    mvprintw(centerY+1, centerX, "Tanggal      : %s", point.m_date.c_str());
+    mvprintw(centerY+2, centerX, "Harga Buka   : %.2f", point.m_open);
+    mvprintw(centerY+3, centerX, "Harga Tinggi : %.2f", point.m_high);
+    mvprintw(centerY+4, centerX, "Harga Rendah : %.2f", point.m_low);
+    mvprintw(centerY+5, centerX, "Harga Tutup  : %.2f", point.m_close);
+    mvprintw(centerY+6, centerX, "Volume       : %ld", point.m_volume);
     
-    double range = point.high - point.low;
-    double change = point.close - point.open;
-    double changePercent = (point.open != 0) ? (change / point.open) * 100 : 0;
+    double range = point.m_high - point.m_low;
+    double change = point.m_close - point.m_open;
+    double changePercent = (point.m_open != 0) ? (change / point.m_open) * 100 : 0;
     
     mvprintw(centerY+8, centerX, "Range Harga: %.2f", range);
     mvprintw(centerY+9, centerX, "Perubahan  : %.2f (%.2f%%)", change, changePercent);
@@ -388,14 +390,14 @@ void UIManager::showRowDetails(const StockPoint& point) {
 }
 
 void UIManager::cleanup() {
-    if (headerWin) delwin(headerWin);
-    if (infoWin) delwin(infoWin);
-    if (statusWin) delwin(statusWin);
-    if (resultWin) delwin(resultWin);
-    headerWin = nullptr;
-    infoWin = nullptr;
-    statusWin = nullptr;
-    resultWin = nullptr;
+    if (m_headerWin) delwin(m_headerWin);
+    if (m_infoWin) delwin(m_infoWin);
+    if (m_statusWin) delwin(m_statusWin);
+    if (m_resultWin) delwin(m_resultWin);
+    m_headerWin = nullptr;
+    m_infoWin = nullptr;
+    m_statusWin = nullptr;
+    m_resultWin = nullptr;
     endwin();
 }
 
@@ -418,55 +420,55 @@ void UIManager::createWindows() {
     int statusHeight = 3;
     int infoWidth = 30;
 
-    if (headerWin) delwin(headerWin);
-    if (infoWin) delwin(infoWin);
-    if (statusWin) delwin(statusWin);
-    if (resultWin) delwin(resultWin);
+    if (m_headerWin) delwin(m_headerWin);
+    if (m_infoWin) delwin(m_infoWin);
+    if (m_statusWin) delwin(m_statusWin);
+    if (m_resultWin) delwin(m_resultWin);
     
-    headerWin = newwin(headerHeight, maxX, 0, 0);
-    if (headerWin) wbkgd(headerWin, COLOR_PAIR(1));
+    m_headerWin = newwin(headerHeight, maxX, 0, 0);
+    if (m_headerWin) wbkgd(m_headerWin, COLOR_PAIR(1));
 
-    infoWin = newwin(maxY - headerHeight - statusHeight, infoWidth, 
+    m_infoWin = newwin(maxY - headerHeight - statusHeight, infoWidth, 
                      headerHeight + 1, maxX - infoWidth);
-    if (infoWin) wbkgd(infoWin, COLOR_PAIR(5));    
+    if (m_infoWin) wbkgd(m_infoWin, COLOR_PAIR(5));    
     
-    statusWin = newwin(statusHeight, maxX, maxY - statusHeight, 0);
-    if (statusWin) wbkgd(statusWin, COLOR_PAIR(4));
+    m_statusWin = newwin(statusHeight, maxX, maxY - statusHeight, 0);
+    if (m_statusWin) wbkgd(m_statusWin, COLOR_PAIR(4));
 
-    resultWin = newwin(maxY - headerHeight - statusHeight, maxX - infoWidth,
+    m_resultWin = newwin(maxY - headerHeight - statusHeight, maxX - infoWidth,
                       headerHeight, 0);
-    if (resultWin) {
-        wbkgd(resultWin, COLOR_PAIR(6));
-        box(resultWin, 0, 0);  
+    if (m_resultWin) {
+        wbkgd(m_resultWin, COLOR_PAIR(6));
+        box(m_resultWin, 0, 0);  
     }
 }
 
 void UIManager::renderResult(const std::vector<StockPoint>& data,
                            const LinearRegression& regression,
                            const std::vector<double>& predictions) {
-    if (!resultWin) return;
+    if (!m_resultWin) return;
     
     int maxY, maxX;
-    getmaxyx(resultWin, maxY, maxX);
+    getmaxyx(m_resultWin, maxY, maxX);
     
-    wattron(resultWin, COLOR_PAIR(1));
-    mvwprintw(resultWin, 1, 2, "=== INFORMASI REGRESI ===");
-    wattroff(resultWin, COLOR_PAIR(1));
-    mvwprintw(resultWin, 2, 2, "Persamaan: %s", regression.getEquation().c_str());
-    mvwprintw(resultWin, 3, 2, "R-squared: %.4f", regression.getRSquared());
-    mvwprintw(resultWin, 4, 2, "Trend: %s", regression.getTrend().c_str());
+    wattron(m_resultWin, COLOR_PAIR(1));
+    mvwprintw(m_resultWin, 1, 2, "=== INFORMASI REGRESI ===");
+    wattroff(m_resultWin, COLOR_PAIR(1));
+    mvwprintw(m_resultWin, 2, 2, "Persamaan: %s", regression.getEquation().c_str());
+    mvwprintw(m_resultWin, 3, 2, "R-squared: %.4f", regression.getRSquared());
+    mvwprintw(m_resultWin, 4, 2, "Trend: %s", regression.getTrend().c_str());
     
-    wattron(resultWin, COLOR_PAIR(1));
-    mvwprintw(resultWin, 6, 2, "=== PREDIKSI 10 HARI KEDEPAN ===");
-    wattroff(resultWin, COLOR_PAIR(1));
+    wattron(m_resultWin, COLOR_PAIR(1));
+    mvwprintw(m_resultWin, 6, 2, "=== PREDIKSI 10 HARI KEDEPAN ===");
+    wattroff(m_resultWin, COLOR_PAIR(1));
     
-    wattron(resultWin, COLOR_PAIR(5));
-    mvwprintw(resultWin, 7, 2, "%-8s %-12s %-12s %-12s", 
+    wattron(m_resultWin, COLOR_PAIR(5));
+    mvwprintw(m_resultWin, 7, 2, "%-8s %-12s %-12s %-12s", 
              "Hari", "Prediksi", "Perubahan", "Persentase");
-    wattroff(resultWin, COLOR_PAIR(5));
-    mvwprintw(resultWin, 8, 2, std::string(maxX-4, '-').c_str());
+    wattroff(m_resultWin, COLOR_PAIR(5));
+    mvwprintw(m_resultWin, 8, 2, std::string(maxX-4, '-').c_str());
     
-    double lastPrice = data.back().close;
+    double lastPrice = data.back().m_close;
     int lastIndex = data.size() - 1;
     double slope = regression.getSlope();
                 
@@ -475,23 +477,23 @@ void UIManager::renderResult(const std::vector<StockPoint>& data,
         double change = predPrice - lastPrice;
         double changePercent = (lastPrice != 0) ? (change / lastPrice) * 100 : 0;
         
-        mvwprintw(resultWin, 9 + i, 2, "%-8d %-12.2f", i + 1, predPrice);
+        mvwprintw(m_resultWin, 9 + i, 2, "%-8d %-12.2f", i + 1, predPrice);
         
         if (slope > 0.1) { 
-            wattron(resultWin, COLOR_PAIR(2));
-            mvwprintw(resultWin, 9 + i, 22, "+%.2f", change);
-            mvwprintw(resultWin, 9 + i, 34, "(+%.2f%%)", changePercent);
-            wattroff(resultWin, COLOR_PAIR(2));
+            wattron(m_resultWin, COLOR_PAIR(2));
+            mvwprintw(m_resultWin, 9 + i, 22, "+%.2f", change);
+            mvwprintw(m_resultWin, 9 + i, 34, "(+%.2f%%)", changePercent);
+            wattroff(m_resultWin, COLOR_PAIR(2));
         } else if (slope < -0.1) { 
-            wattron(resultWin, COLOR_PAIR(3));
-            mvwprintw(resultWin, 9 + i, 22, "%.2f", change);
-            mvwprintw(resultWin, 9 + i, 34, "(%.2f%%)", changePercent);
-            wattroff(resultWin, COLOR_PAIR(3));
+            wattron(m_resultWin, COLOR_PAIR(3));
+            mvwprintw(m_resultWin, 9 + i, 22, "%.2f", change);
+            mvwprintw(m_resultWin, 9 + i, 34, "(%.2f%%)", changePercent);
+            wattroff(m_resultWin, COLOR_PAIR(3));
         } else { 
-            wattron(resultWin, COLOR_PAIR(4));
-            mvwprintw(resultWin, 9 + i, 22, "%.2f", change);
-            mvwprintw(resultWin, 9 + i, 34, "(%.2f%%)", changePercent);
-            wattroff(resultWin, COLOR_PAIR(4));
+            wattron(m_resultWin, COLOR_PAIR(4));
+            mvwprintw(m_resultWin, 9 + i, 22, "%.2f", change);
+            mvwprintw(m_resultWin, 9 + i, 34, "(%.2f%%)", changePercent);
+            wattroff(m_resultWin, COLOR_PAIR(4));
         }
     }
 }
@@ -506,21 +508,21 @@ void UIManager::renderAll(const std::vector<StockPoint>& data,
         refresh();
         
         renderTopHeader();
-        if (headerWin) wrefresh(headerWin);
-        
-        if (resultWin) {
-            werase(resultWin);
-            box(resultWin, 0, 0);
+        if (m_headerWin) wrefresh(m_headerWin);
+
+        if (m_resultWin) {
+            werase(m_resultWin);
+            box(m_resultWin, 0, 0);
             renderResult(data, regression, predictions);
-            wrefresh(resultWin);
+            wrefresh(m_resultWin);
         }
-        
-        if (statusWin) {
-            werase(statusWin);
-            wattron(statusWin, COLOR_PAIR(4));
-            mvwprintw(statusWin, 0, 1, "Spasi: Kembali ke Tabel Data | Q: Keluar");
-            wattroff(statusWin, COLOR_PAIR(4));
-            wrefresh(statusWin);
+
+        if (m_statusWin) {
+            werase(m_statusWin);
+            wattron(m_statusWin, COLOR_PAIR(4));
+            mvwprintw(m_statusWin, 0, 1, "Spasi: Kembali ke Tabel Data | Q: Keluar");
+            wattroff(m_statusWin, COLOR_PAIR(4));
+            wrefresh(m_statusWin);
         }
         
         int ch = getch();
@@ -540,62 +542,62 @@ void UIManager::renderAll(const std::vector<StockPoint>& data,
 }
 
 void UIManager::renderTopHeader() {
-    if (!headerWin) return;
+    if (!m_headerWin) return;
     
     int maxY, maxX;
-    getmaxyx(headerWin, maxY, maxX);
-    werase(headerWin);
-    wattron(headerWin, COLOR_PAIR(1));
-    mvwprintw(headerWin, 0, 0, std::string(maxX, ' ').c_str());
-    mvwprintw(headerWin, 0, 2, "== Stock Forecast By Kelompok 4 (Anjay) ==");
-    wattroff(headerWin, COLOR_PAIR(1));
+    getmaxyx(m_headerWin, maxY, maxX);
+    werase(m_headerWin);
+    wattron(m_headerWin, COLOR_PAIR(1));
+    mvwprintw(m_headerWin, 0, 0, std::string(maxX, ' ').c_str());
+    mvwprintw(m_headerWin, 0, 2, "== Stock Forecast By Kelompok 4 (Anjay) ==");
+    wattroff(m_headerWin, COLOR_PAIR(1));
 }
 
 void UIManager::renderInfo(const LinearRegression& regression, const std::vector<double>& predictions) {
-    if (!infoWin) return;
+    if (!m_infoWin) return;
 
-    werase(infoWin);
+    werase(m_infoWin);
     
-    wattron(infoWin, COLOR_PAIR(1));
-    mvwprintw(infoWin, 0, 1, "=== INFO PANEL ===");
-    mvwprintw(infoWin, 2, 1, "Persamaan Regresi:");
-    mvwprintw(infoWin, 3, 1, "%s", regression.getEquation().c_str());
-    mvwprintw(infoWin, 5, 1, "R-squared: %.4f", regression.getRSquared());
-    mvwprintw(infoWin, 6, 1, "Trend: %s", regression.getTrend().c_str());
+    wattron(m_infoWin, COLOR_PAIR(1));
+    mvwprintw(m_infoWin, 0, 1, "=== INFO PANEL ===");
+    mvwprintw(m_infoWin, 2, 1, "Persamaan Regresi:");
+    mvwprintw(m_infoWin, 3, 1, "%s", regression.getEquation().c_str());
+    mvwprintw(m_infoWin, 5, 1, "R-squared: %.4f", regression.getRSquared());
+    mvwprintw(m_infoWin, 6, 1, "Trend: %s", regression.getTrend().c_str());
 
     if (!predictions.empty()) {
-        mvwprintw(infoWin, 8, 1, "Prediksi 3 Hari:");
+        mvwprintw(m_infoWin, 8, 1, "Prediksi 3 Hari:");
         int maxPredictions = std::min(3, (int)predictions.size());
         for (int i = 0; i < maxPredictions; i++) {
-            mvwprintw(infoWin, 9 + i, 1, "Hari %d: %.2f", i + 1, predictions[i]);
+            mvwprintw(m_infoWin, 9 + i, 1, "Hari %d: %.2f", i + 1, predictions[i]);
         }
     }
     
-    wattroff(infoWin, COLOR_PAIR(1));
-    wrefresh(infoWin);
+    wattroff(m_infoWin, COLOR_PAIR(1));
+    wrefresh(m_infoWin);
 }
 
 void UIManager::renderStatus() {
-    if (!statusWin) return;
-    wattron(statusWin, COLOR_PAIR(4));
-    mvwprintw(statusWin, 0, 1, "W/S: Navigasi | Page Up/Down: Scroll Cepat | Enter: Detail Baris | q: Keluar");
-    mvwprintw(statusWin, 1, 1, "Home/End: Awal/Akhir Data | Prediksi: %s ", 
-              showPredictions ? "ON" : "OFF");
-    wattroff(statusWin, COLOR_PAIR(4));
+    if (!m_statusWin) return;
+    wattron(m_statusWin, COLOR_PAIR(4));
+    mvwprintw(m_statusWin, 0, 1, "W/S: Navigasi | Page Up/Down: Scroll Cepat | Enter: Detail Baris | q: Keluar");
+    mvwprintw(m_statusWin, 1, 1, "Home/End: Awal/Akhir Data | Prediksi: %s ", 
+              m_showPredictions ? "ON" : "OFF");
+    wattroff(m_statusWin, COLOR_PAIR(4));
 }
 
 void UIManager::showError(const std::string& message) {
-    if (!statusWin) {
+    if (!m_statusWin) {
         std::cerr << "Error: " << message << std::endl;
         return;
     }
 
-    werase(statusWin);
-    wattron(statusWin, COLOR_PAIR(7));
-    mvwprintw(statusWin, 0, 1, "ERROR: %s", message.c_str());
-    mvwprintw(statusWin, 1, 1, "Tekan sembarang tombol buat lanjut...");
-    wattroff(statusWin, COLOR_PAIR(7));
-    wrefresh(statusWin);
+    werase(m_statusWin);
+    wattron(m_statusWin, COLOR_PAIR(7));
+    mvwprintw(m_statusWin, 0, 1, "ERROR: %s", message.c_str());
+    mvwprintw(m_statusWin, 1, 1, "Tekan sembarang tombol buat lanjut...");
+    wattroff(m_statusWin, COLOR_PAIR(7));
+    wrefresh(m_statusWin);
     waitForInput();
 }
 
@@ -613,4 +615,4 @@ bool UIManager::processInput(int input) {
             break;
     }
     return true;
-} 
+}

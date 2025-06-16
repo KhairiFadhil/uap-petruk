@@ -8,8 +8,8 @@
 
 class CSVReader {
 private:
-    std::string filename;
-    char delimiter;
+    std::string m_filename;
+    char m_delimiter;
     StockPoint parseLine(const std::string& line);
     std::string trim(const std::string& str);
     std::vector<std::string> split(const std::string& str, char delim);
@@ -17,7 +17,7 @@ private:
     long parseLong(const std::string& str);
     
 public:
-    CSVReader(char delim = ',') : delimiter(delim) {}
+    CSVReader(char delimParam = ',') : m_delimiter(delimParam) {}
     bool loadData(const std::string& filename, std::vector<StockPoint>& data);
     bool validateFile(const std::string& filename, std::string& errorMessage);
     int getLineCount(const std::string& filename);

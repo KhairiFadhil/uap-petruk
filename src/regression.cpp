@@ -1,8 +1,9 @@
 #include "regression.hpp"
+
 #include <cmath>
-#include <sstream>
-#include <numeric>
 #include <iomanip>
+#include <numeric>
+#include <sstream>
 
 bool LinearRegression::trainModel(const std::vector<StockPoint>& data) {
     if (data.empty()) {
@@ -10,15 +11,15 @@ bool LinearRegression::trainModel(const std::vector<StockPoint>& data) {
     }
     
     for(size_t i = 0; i < data.size(); ++i){
-        xValues.push_back(static_cast<double>(i));
-        yValues.push_back(data[i].close);
+        m_xValues.push_back(static_cast<double>(i));
+        m_yValues.push_back(data[i].m_close);
     }
 
     calculateCoefficients();
     calculateRSquared();
     generateEquation();
     
-    isTrained = true;
+    m_isTrained = true;
     return true;
 }
 
@@ -29,56 +30,56 @@ double LinearRegression::calculateMean(const std::vector<double>& values) {
 }
 
 void LinearRegression::calculateCoefficients() {
-    double xMean = calculateMean(xValues);
-    double yMean = calculateMean(yValues);
+    double xMean = calculateMean(m_xValues);
+    double yMean = calculateMean(m_yValues);
 
     double numerator = 0.0;
     double denominator = 0.0;
 
-    for(size_t i = 0; i < xValues.size(); ++i){
-        numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
-        denominator += (xValues[i] - xMean) * (xValues[i] - xMean);
+    for(size_t i = 0; i < m_xValues.size(); ++i){
+        numerator += (m_xValues[i] - xMean) * (m_yValues[i] - yMean);
+        denominator += (m_xValues[i] - xMean) * (m_xValues[i] - xMean);
     }
 
-    model.slope = numerator / denominator;
-    model.intercept = yMean - model.slope * xMean;
+    m_model.m_slope = numerator / denominator;
+    m_model.m_intercept = yMean - m_model.m_slope * xMean;
 }
 
 void LinearRegression::calculateRSquared() {
     double ssTotal = 0.0;
     double ssRes = 0.0;
-    double yMean = calculateMean(yValues);
+    double yMean = calculateMean(m_yValues);
 
-    for(size_t i = 0; i < yValues.size(); ++i){
-        ssTotal += (yValues[i] - yMean) * (yValues[i] - yMean);
-        double predicted = model.slope * xValues[i] + model.intercept;
-        ssRes += (yValues[i] - predicted) * (yValues[i] - predicted);
+    for(size_t i = 0; i < m_yValues.size(); ++i){
+        ssTotal += (m_yValues[i] - yMean) * (m_yValues[i] - yMean);
+        double predicted = m_model.m_slope * m_xValues[i] + m_model.m_intercept;
+        ssRes += (m_yValues[i] - predicted) * (m_yValues[i] - predicted);
     }
 
-    model.rSquared = 1 - (ssRes / ssTotal);
+    m_model.m_rSquared = 1 - (ssRes / ssTotal);
 }
 
 void LinearRegression::generateEquation() {
     std::ostringstream ss;
     ss << std::fixed << std::setprecision(2);
-    ss << "y = " << model.slope << "x + " << model.intercept;
-    model.equation = ss.str();
+    ss << "y = " << m_model.m_slope << "x + " << m_model.m_intercept;
+    m_model.m_equation = ss.str();
 }
 
 std::string LinearRegression::getEquation() const {
-    return model.equation;
+    return m_model.m_equation;
 }
 
 double LinearRegression::getRSquared() const {
-    return model.rSquared;
+    return m_model.m_rSquared;
 }
 
 double LinearRegression::predict(int dayIndex) const {
-    if (!isTrained) {
+    if (!m_isTrained) {
         return 0.0;
     }
     
-    return model.slope * dayIndex + model.intercept;
+    return m_model.m_slope * dayIndex + m_model.m_intercept;
 }
 
 std::vector<double> LinearRegression::generatePredictions(int totalDays) {
@@ -92,13 +93,13 @@ std::vector<double> LinearRegression::generatePredictions(int totalDays) {
 }
 
 std::string LinearRegression::getTrend() const {
-    if (!isTrained) {
+    if (!m_isTrained) {
         return "Unknown";
     }
     
-   if(model.slope > 0.1){
+   if(m_model.m_slope > 0.1){
         return "Naik";
-    }else if(model.slope < -0.1){
+    }else if(m_model.m_slope < -0.1){
         return "Turun";
     }else{
         return "Datar";
@@ -107,21 +108,21 @@ std::string LinearRegression::getTrend() const {
 
 
 double LinearRegression::getSlope() const {
-  return model.slope;
+  return m_model.m_slope;
 }
 
 double LinearRegression::getIntercept() const {
-  return model.intercept;
+  return m_model.m_intercept;
 }
 
 
 bool LinearRegression::isModelValid() const {
-    return isTrained && model.rSquared >= 0 && model.rSquared <= 1;
+    return m_isTrained && m_model.m_rSquared >= 0 && m_model.m_rSquared <= 1;
 }
 
 void LinearRegression::clear() {
-    xValues.clear();
-    yValues.clear();
-    model = RegressionModel();
-    isTrained = false;
-} 
+    m_xValues.clear();
+    m_yValues.clear();
+    m_model = RegressionModel();
+    m_isTrained = false;
+}

@@ -1,47 +1,46 @@
-#include <iostream>
+#include "mergeSort.hpp"
+
 #include <vector>
-#include <mergeSort.hpp>
 
-void mergeSort(std::vector<StockPoint> &data, int left, int right) {
-    if (left < right) {
-        int mid = left + (right - left) / 2;
-        mergeSort(data, left, mid);
-        mergeSort(data, mid + 1, right);
-        merge(data, left, mid, right);
+void mergeSort(std::vector<StockPoint> &data, int leftIndex, int rightIndex) {
+    if (leftIndex < rightIndex) {
+        int midIndex = leftIndex + (rightIndex - leftIndex) / 2;
+        mergeSort(data, leftIndex, midIndex);
+        mergeSort(data, midIndex + 1, rightIndex);
+        merge(data, leftIndex, midIndex, rightIndex);
     }
 }
 
-//ni modifikasi aja mergesortnya jangan tergantung ama close ajha bisa diubah ke open, high, low, volume (dibuat aja jadi class jangan fungsi)
-bool isSmaller(const StockPoint& left, const StockPoint& right) {
-    return left.close < right.close;
+bool isSmaller(const StockPoint& leftParam, const StockPoint& rightParam) {
+    return leftParam.m_close < rightParam.m_close;
 }
 
-bool isBigger(const StockPoint& left, const StockPoint& right) {
-    return left.close > right.close;
+bool isBigger(const StockPoint& leftParam, const StockPoint& rightParam) {
+    return leftParam.m_close > rightParam.m_close;
 }
 
-void merge(std::vector<StockPoint> &data, int left, int mid, int right) {
-    std::vector<StockPoint> temp(data.begin() + left, data.begin() + mid + 1);
-    std::vector<StockPoint> temp2(data.begin() + mid + 1, data.begin() + right + 1);
-    int i = 0, j = 0, k = left;
-    while(i < temp.size() && j < temp2.size()){
-        if(isBigger(temp[i], temp2[j])){
-            data[k] = temp[i];
-            i++;
+void merge(std::vector<StockPoint> &data, int leftIndex, int midIndex, int rightIndex) {
+    std::vector<StockPoint> leftTemp(data.begin() + leftIndex, data.begin() + midIndex + 1);
+    std::vector<StockPoint> rightTemp(data.begin() + midIndex + 1, data.begin() + rightIndex + 1);
+    int leftIdx = 0, rightIdx = 0, mergeIdx = leftIndex;
+    while(leftIdx < leftTemp.size() && rightIdx < rightTemp.size()){
+        if(isBigger(leftTemp[leftIdx], rightTemp[rightIdx])){
+            data[mergeIdx] = leftTemp[leftIdx];
+            leftIdx++;
         }else{
-            data[k] = temp2[j];
-            j++;
+            data[mergeIdx] = rightTemp[rightIdx];
+            rightIdx++;
         }
-        k++;
+        mergeIdx++;
     }
-    while(i < temp.size()){
-        data[k] = temp[i];
-        i++;
-        k++;
+    while(leftIdx < leftTemp.size()){
+        data[mergeIdx] = leftTemp[leftIdx];
+        leftIdx++;
+        mergeIdx++;
     }
-    while(j < temp2.size()){
-        data[k] = temp2[j];
-        j++;
-        k++;
+    while(rightIdx < rightTemp.size()){
+        data[mergeIdx] = rightTemp[rightIdx];
+        rightIdx++;
+        mergeIdx++;
     }
 }
