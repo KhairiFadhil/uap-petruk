@@ -1,13 +1,13 @@
 #include "csv_reader.hpp"
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
+
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 bool CSVReader::loadData(const std::string& filename, std::vector<StockPoint>& data) {
     std::ifstream file(filename);
@@ -19,13 +19,12 @@ bool CSVReader::loadData(const std::string& filename, std::vector<StockPoint>& d
     std::string line;
     while (std::getline(file, line)) {
         StockPoint point = parseLine(line);
-        if (point.date.empty()) continue;  
+        if (point.m_date.empty()) continue;  
         data.push_back(point);
     }
     return true;
 }
 
-// parsing data masuk ke variable class
 StockPoint CSVReader::parseLine(const std::string& line) {
     StockPoint point;
     std::stringstream ss(line);
@@ -36,25 +35,25 @@ StockPoint CSVReader::parseLine(const std::string& line) {
             return point;
         }
         if (std::getline(ss, token, ',')) {
-            point.date = trim(token);
+            point.m_date = trim(token);
         }
         if (std::getline(ss, token, ',')) {
-            point.open = parseDouble(trim(token));
+            point.m_open = parseDouble(trim(token));
         }
         if (std::getline(ss, token, ',')) {
-            point.high = parseDouble(trim(token));
+            point.m_high = parseDouble(trim(token));
         }        
         if (std::getline(ss, token, ',')) {
-            point.low = parseDouble(trim(token));
+            point.m_low = parseDouble(trim(token));
         }        
         if (std::getline(ss, token, ',')) {
-            point.close = parseDouble(trim(token));
+            point.m_close = parseDouble(trim(token));
         }
         if (std::getline(ss, token, ',')) {
-            point.volume = parseLong(trim(token));
+            point.m_volume = parseLong(trim(token));
         }
         
-        if (point.date.empty() || point.open == 0.0 || point.close == 0.0 ){
+        if (point.m_date.empty() || point.m_open == 0.0 || point.m_close == 0.0 ){
             return StockPoint(); 
         }
     } catch (const std::exception& e) {
@@ -63,8 +62,6 @@ StockPoint CSVReader::parseLine(const std::string& line) {
     }
     return point;
 }
-
-//ngilangin whitespace
 
 std::string CSVReader::trim(const std::string& str) {
     if (str.empty()) return str;
@@ -103,7 +100,6 @@ long CSVReader::parseLong(const std::string& str) {
     }
 }
 
-//Cek Format File
 bool CSVReader::validateFile(const std::string& filename, std::string& errorMessage) {
     if (filename.length() < 4) {
         errorMessage = "Nama file terlalu pendek";
@@ -137,7 +133,6 @@ bool CSVReader::validateFile(const std::string& filename, std::string& errorMess
         return false;
     }
 
-    // Cek minimal 2 baris (header + 1 data)
     int dataLines = 0;
     std::string line;
     while (std::getline(file, line)){
@@ -157,7 +152,6 @@ bool CSVReader::validateFile(const std::string& filename, std::string& errorMess
     return true;
 }
 
-// Hitung berapa baris yang ada di file
 int CSVReader::getLineCount(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
@@ -168,7 +162,6 @@ int CSVReader::getLineCount(const std::string& filename) {
     return count;
 }
 
-// buat liat preview beberapa baris pertama (nnti aj)
 std::vector<std::string> CSVReader::previewFile(const std::string& filename, int lines) {
     std::vector<std::string> preview;
     std::ifstream file(filename);
@@ -181,4 +174,4 @@ std::vector<std::string> CSVReader::previewFile(const std::string& filename, int
     }
     
     return preview;
-} 
+}

@@ -1,11 +1,12 @@
 #include "stock_data.hpp"
+
 #include <algorithm>
-#include <numeric>
 #include <cmath>
+#include <numeric>
 
 void StockDataProcessor::preprocessData(std::vector<StockPoint>& data) {
   for (size_t i = 0; i < data.size(); i++){
-    data[i].dayIndex = static_cast<int>(i);
+    data[i].m_dayIndex = static_cast<int>(i);
   }
 }
 
@@ -28,25 +29,25 @@ StockDataProcessor::DataSummary StockDataProcessor::getSummary(const std::vector
     double sumClose = 0.0;
     long sumVolume = 0;
 
-    summary.minPrice = data[0].close;
-    summary.maxPrice = data[0].close;
-    summary.minVolume = data[0].volume;
-    summary.maxVolume = data[0].volume;
+    summary.m_minPrice = data[0].m_close;
+    summary.m_maxPrice = data[0].m_close;
+    summary.m_minVolume = data[0].m_volume;
+    summary.m_maxVolume = data[0].m_volume;
 
     for (const auto& point : data){
-      sumClose += point.close;
-      sumVolume += point.volume;
+      sumClose += point.m_close;
+      sumVolume += point.m_volume;
 
-      if (point.close < summary.minPrice) summary.minPrice = point.close;
-      if (point.close > summary.maxPrice) summary.maxPrice = point.close;
+      if (point.m_close < summary.m_minPrice) summary.m_minPrice = point.m_close;
+      if (point.m_close > summary.m_maxPrice) summary.m_maxPrice = point.m_close;
 
-      if (point.volume < summary.minVolume) summary.minVolume = point.volume;
-      if (point.volume > summary.maxVolume) summary.maxVolume = point.volume;
+      if (point.m_volume < summary.m_minVolume) summary.m_minVolume = point.m_volume;
+      if (point.m_volume > summary.m_maxVolume) summary.m_maxVolume = point.m_volume;
 
     }
 
-  summary.avgPrice = sumClose / data.size();
-  summary.avgVolume = static_cast<double>(sumVolume) / data.size();
-  summary.totalDays = static_cast<int>(data.size());    
+  summary.m_avgPrice = sumClose / data.size();
+  summary.m_avgVolume = static_cast<double>(sumVolume) / data.size();
+  summary.m_totalDays = static_cast<int>(data.size());    
     return summary;
-} 
+}

@@ -10,12 +10,12 @@
 
 class UIManager {
 private:
-    WINDOW* headerWin;       
-    WINDOW* infoWin;         
-    WINDOW* statusWin;       
-    WINDOW* resultWin;      
+    WINDOW* m_headerWin;       
+    WINDOW* m_infoWin;         
+    WINDOW* m_statusWin;       
+    WINDOW* m_resultWin;      
     
-    bool showPredictions;    
+    bool m_showPredictions;    
 
     void setupColors();
     void createWindows();
@@ -26,11 +26,11 @@ private:
     void showRowDetails(const StockPoint& point);
     
 public:
-    UIManager() : headerWin(nullptr), 
-                  infoWin(nullptr), 
-                  statusWin(nullptr),
-                  resultWin(nullptr),
-                  showPredictions(true) {}
+    UIManager() : m_headerWin(nullptr), 
+                  m_infoWin(nullptr), 
+                  m_statusWin(nullptr),
+                  m_resultWin(nullptr),
+                  m_showPredictions(true) {}
     
     ~UIManager() { cleanup(); }
     
@@ -51,4 +51,4 @@ public:
     static const int KEY_QUIT = 'q';
 };
 
-#endif 
+#endif

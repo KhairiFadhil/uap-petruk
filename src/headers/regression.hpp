@@ -5,21 +5,21 @@
 #include <string>
 #include "stock_data.hpp"
 struct RegressionModel {
-    double slope;        // Kemiringan garis (m)
-    double intercept;    // Titik potong Y (b)
-    double rSquared;     // R-squared (seberapa bagus modelnya)
-    double correlation;  // Korelasi
-    std::string equation; // Persamaan: y = mx + b
+    double m_slope;        // Kemiringan garis (m)
+    double m_intercept;    // Titik potong Y (b)
+    double m_rSquared;     // R-squared (seberapa bagus modelnya)
+    double m_correlation;  // Korelasi
+    std::string m_equation; // Persamaan: y = mx + b
     
-    RegressionModel() : slope(0), intercept(0), rSquared(0), correlation(0) {}
+    RegressionModel() : m_slope(0), m_intercept(0), m_rSquared(0), m_correlation(0) {}
 };
 
 class LinearRegression {
 private:
-    RegressionModel model;
-    std::vector<double> xValues;  // Index hari
-    std::vector<double> yValues;  // Harga penutupan
-    bool isTrained;
+    RegressionModel m_model;
+    std::vector<double> m_xValues;  // Index hari
+    std::vector<double> m_yValues;  // Harga penutupan
+    bool m_isTrained;
     
     double calculateMean(const std::vector<double>& values);
     
@@ -29,13 +29,13 @@ private:
     void generateEquation();
     
 public:
-    LinearRegression() : isTrained(false) {}
+    LinearRegression() : m_isTrained(false) {}
     double getSlope() const;
     double getIntercept() const;
     std::string getEquation() const;
     double getRSquared() const;
     bool trainModel(const std::vector<StockPoint>& data);
-    const RegressionModel& getModel() const { return model; }
+    const RegressionModel& getModel() const { return m_model; }
     double predict(int dayIndex) const;
     std::vector<double> generatePredictions(int totalDays);
     std::string getTrend() const;
